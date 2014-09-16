@@ -1,0 +1,17 @@
+---
+- hosts: all
+  gather_facts: False
+  sudo: False
+  tasks:
+
+    - name: check out required roles
+      delegate_to: localhost
+      connection: local
+      git:
+        repo: git@bitbucket.org:harness/ansible-role-{{ item }}.git
+        dest: roles/{{ item }}
+        update: yes
+      with_items:
+        - upgrade
+        - chrony
+        - docker
