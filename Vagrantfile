@@ -18,7 +18,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.define "maia01" do |machine|
-    machine.vm.box = "chef/centos-6.5"
+    machine.vm.box = "box-cutter/centos64"
     machine.vm.network :private_network, ip: "10.1.0.3",
                        :netmask => "255.255.0.0"
     machine.vm.hostname = "maia01"
