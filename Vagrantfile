@@ -7,8 +7,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 
   config.vm.define "axel07" do |machine|
-    machine.vm.box = "trusty64"
-    machine.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
+    machine.vm.box = "ubuntu/trusty64"
     machine.vm.network :private_network, ip: "10.1.0.2",
                        :netmask => "255.255.0.0"
     machine.vm.hostname = "axel07"
