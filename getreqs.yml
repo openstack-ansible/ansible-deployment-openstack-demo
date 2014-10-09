@@ -8,10 +8,11 @@
       delegate_to: localhost
       connection: local
       git:
-        repo: git@bitbucket.org:harness/ansible-role-{{ item }}.git
+        repo: https://github.com/openstack-ansible/ansible-role-{{ item }}.git
         dest: roles/{{ item }}
         update: yes
       with_items:
         - upgrade
         - chrony
         - docker
+        - mariadb

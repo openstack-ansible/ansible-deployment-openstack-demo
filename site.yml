@@ -4,5 +4,7 @@
   roles:
     - upgrade
     - chrony
-    - virtualbox
-    - vagrant
+
+- hosts: controller
+  roles:
+    - mariadb

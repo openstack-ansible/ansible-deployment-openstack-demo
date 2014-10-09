@@ -1,10 +1,10 @@
-ansible deployment for harness demonstrator
-===========================================
+ansible deployment for openstack demo
+=====================================
 
-The purpose of this ansible deployment is to configure and set up the harness 
-demonstrator.
+The purpose of this ansible deployment is to configure and set up 
+a basic openstack system for demonstration purposes.
 
 Author Information
 ------------------
 
-http://harness-project.eu
+https://github.com/openstack-ansible
