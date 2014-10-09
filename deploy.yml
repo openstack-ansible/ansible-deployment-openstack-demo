@@ -1,0 +1,5 @@
+---
+- hosts: controller
+  sudo: True
+  roles:
+    - mariadb
