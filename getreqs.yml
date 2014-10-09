@@ -16,3 +16,5 @@
         - chrony
         - docker
         - mariadb
+        - keystone
+        - glance
