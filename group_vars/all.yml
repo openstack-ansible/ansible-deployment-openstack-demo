@@ -1,2 +1,6 @@
 ---
 mariadb_dockerized_deployment: true
+mariadb_bind_address: 0.0.0.0
+
+keystone_dockerized_deployment: true,
+keystone_mysql_host: "{{ ansible_docker0['ipv4']['address'] }}"

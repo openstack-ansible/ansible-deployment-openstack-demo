@@ -18,3 +18,10 @@
         - mariadb
         - keystone
         - glance
+
+    - name: check out library needed for demo deployment from github.com
+      git:
+        repo:
+          'https://github.com/openstack-ansible/openstack-ansible-modules.git'
+        dest: library/openstack-ansible-modules
+        update: yes

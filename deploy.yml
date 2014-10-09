@@ -3,3 +3,4 @@
   sudo: True
   roles:
     - mariadb
+    - keystone
