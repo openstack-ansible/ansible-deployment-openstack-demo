@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: localhost
   gather_facts: False
   sudo: False
   tasks:
@@ -16,6 +16,7 @@
         - chrony
         - docker
         - mariadb
+        - rabbitmq-server
         - keystone
         - glance
 
