@@ -1,1 +1,60 @@
 ---
+- hosts: all
+  sudo: True
+  vars:
+    cirros_url: http://download.cirros-cloud.net/0.3.1/cirros-0.3.1-x86_64-disk.img
+ 
+  tasks:
+
+    - name: update admin.openrc from template
+      template:
+        src: templates/admin.openrc
+        dest: "{{ ansible_env.PWD }}/admin.openrc"
+        owner: "{{ ansible_ssh_user }}"
+
+    - name: ensure packages required for testing are installed
+      apt:
+        pkg: "{{ item }}"
+        state: latest
+        update_cache: yes
+        cache_valid_time: 600
+      with_items:
+        - python-keystoneclient
+        - python-glanceclient
+
+    - name: create demo tenant
+      keystone_user:
+        endpoint: "{{ glance_identity_admin_url }}"
+        token: "{{ glance_identity_admin_token }}"
+        tenant: demo
+        tenant_description: "Demo Tenant"
+
+    - name: create demo user
+      keystone_user:
+        endpoint: "{{ glance_identity_admin_url }}"
+        token: "{{ glance_identity_admin_token }}"
+        tenant: demo
+        user: demo
+        password: "{{ glance_identity_demo_password }}"
+
+    - name: associate _member_ role with demo user
+      keystone_user:
+        endpoint: "{{ glance_identity_admin_url }}"
+        token: "{{ glance_identity_admin_token }}"
+        tenant: demo
+        user: demo
+        role: _member_
+
+    - name: ensure cirros image is registered
+      glance_image:
+        auth_url: "{{ glance_identity_public_url }}"
+        login_tenant_name: demo
+        login_username: demo
+        login_password: "{{ glance_identity_demo_password }}"
+        name: cirros-0.3.1-x86_64
+        disk_format: qcow2
+        copy_from: "{{ cirros_url }}"
+        is_public: True
+        timeout: 1200
+        state: present
+
