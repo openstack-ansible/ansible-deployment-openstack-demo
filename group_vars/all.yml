@@ -8,12 +8,20 @@ keystone_mysql_host: "{{ ansible_docker0['ipv4']['address'] }}"
 glance_dockerized_deployment: true,
 glance_mysql_host: "{{ ansible_docker0['ipv4']['address'] }}"
 
+run_dir: "{{ lookup('env', 'PWD') }}"
 identity_admin_password: >
-  {{ lookup('password', glance_run_dir +
+  {{ lookup('password', run_dir +
                         '/private/credentials/keystone-admin-password
                          length=20
                          chars=ascii_letters,digits') }}
 
+identity_admin_token: >
+  {{ lookup('password', run_dir +
+                        '/private/credentials/keystone-admin-token
+                         length=20
+                         chars=ascii_letters,digits') }}
 identity_endpoint_host: 127.0.0.1
-identity_public_url: http://{{ glance_identity_endpoint_host }}:5000/v2.0
+identity_public_url: http://{{ identity_endpoint_host }}:5000/v2.0
+identity_admin_url: http://{{ identity_endpoint_host }}:35357/v2.0
 identity_region: RegionOne
+identity_demo_password: password

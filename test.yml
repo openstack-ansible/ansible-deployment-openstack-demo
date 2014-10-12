@@ -24,33 +24,33 @@
 
     - name: create demo tenant
       keystone_user:
-        endpoint: "{{ glance_identity_admin_url }}"
-        token: "{{ glance_identity_admin_token }}"
+        endpoint: "{{ identity_admin_url }}"
+        token: "{{ identity_admin_token }}"
         tenant: demo
         tenant_description: "Demo Tenant"
 
     - name: create demo user
       keystone_user:
-        endpoint: "{{ glance_identity_admin_url }}"
-        token: "{{ glance_identity_admin_token }}"
+        endpoint: "{{ identity_admin_url }}"
+        token: "{{ identity_admin_token }}"
         tenant: demo
         user: demo
-        password: "{{ glance_identity_demo_password }}"
+        password: "{{ identity_demo_password }}"
 
     - name: associate _member_ role with demo user
       keystone_user:
-        endpoint: "{{ glance_identity_admin_url }}"
-        token: "{{ glance_identity_admin_token }}"
+        endpoint: "{{ identity_admin_url }}"
+        token: "{{ identity_admin_token }}"
         tenant: demo
         user: demo
         role: _member_
 
     - name: ensure cirros image is registered
       glance_image:
-        auth_url: "{{ glance_identity_public_url }}"
+        auth_url: "{{ identity_public_url }}"
         login_tenant_name: demo
         login_username: demo
-        login_password: "{{ glance_identity_demo_password }}"
+        login_password: "{{ identity_demo_password }}"
         name: cirros-0.3.1-x86_64
         disk_format: qcow2
         copy_from: "{{ cirros_url }}"
