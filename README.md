@@ -8,3 +8,15 @@ Author Information
 ------------------
 
 https://github.com/openstack-ansible
+
+Todo
+----
+
+- roles should have distinct install and configuration phases only, with 
+  configuration occurring at startup in docker using a launch script, all
+  long-running processes should be managed by supervisor
+
+- all test/demo variables should be moved out of defaults/ and group_vars/ and
+  and set at the top of test.yml
+
+- every role should have a test and be set up for ci in travis...

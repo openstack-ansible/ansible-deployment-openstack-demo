@@ -1,12 +1,18 @@
 ---
-mariadb_dockerized_deployment: true
+openstack_demo_dockerized_deployment: false
+
+mariadb_dockerized_deployment: "{{ openstack_demo_dockerized_deployment }}"
 mariadb_bind_address: 0.0.0.0
 
-keystone_dockerized_deployment: true,
-keystone_mysql_host: "{{ ansible_docker0['ipv4']['address'] }}"
+keystone_dockerized_deployment: "{{ openstack_demo_dockerized_deployment }}"
+#keystone_mysql_host: "{{ ansible_docker0['ipv4']['address'] }}"
 
-glance_dockerized_deployment: true,
-glance_mysql_host: "{{ ansible_docker0['ipv4']['address'] }}"
+glance_dockerized_deployment: "{{ openstack_demo_dockerized_deployment }}"
+#glance_mysql_host: "{{ ansible_docker0['ipv4']['address'] }}"
+
+nova_dockerized_deployment: "{{ openstack_demo_dockerized_deployment }}"
+#nova_mysql_host: "{{ ansible_docker0['ipv4']['address'] }}"
+#nova_rabbitmq_host: "{{ ansible_docker0['ipv4']['address'] }}"
 
 run_dir: "{{ lookup('env', 'PWD') }}"
 identity_admin_password: >
@@ -20,6 +26,7 @@ identity_admin_token: >
                         '/private/credentials/keystone-admin-token
                          length=20
                          chars=ascii_letters,digits') }}
+
 identity_endpoint_host: 127.0.0.1
 identity_public_url: http://{{ identity_endpoint_host }}:5000/v2.0
 identity_admin_url: http://{{ identity_endpoint_host }}:35357/v2.0

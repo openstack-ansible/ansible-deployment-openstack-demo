@@ -2,7 +2,9 @@
 - hosts: controller
   sudo: True
   roles:
+    - chrony
     - mariadb
     - rabbitmq-server
     - keystone
     - glance
+    - nova-controller
