@@ -8,3 +8,12 @@
     - keystone
     - glance
     - nova-controller
+    - neutron-controller
+    - neutron-network
+
+- hosts: compute-001
+  sudo: True
+  roles:
+    - chrony
+    - nova-compute
+
