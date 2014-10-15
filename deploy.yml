@@ -1,19 +1,26 @@
 ---
-- hosts: controller
+- hosts: all 
   sudo: True
   roles:
     - chrony
+    - upgrade
+
+- hosts: controller
+  sudo: True
+  roles:
     - mariadb
     - rabbitmq-server
     - keystone
     - glance
     - nova-controller
     - neutron-controller
-    - neutron-network
 
-- hosts: compute-001
+- hosts: network
   sudo: True
   roles:
-    - chrony
-    - nova-compute
+    - neutron-network
 
+- hosts: compute
+  sudo: True
+  roles:
+    - nova-compute

@@ -1,0 +1,2 @@
+---
+nova_compute_external_ip: "10.1.0.2",
