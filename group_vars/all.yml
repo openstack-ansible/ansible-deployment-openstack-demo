@@ -32,7 +32,7 @@ openstack_compute_node_ip: "{{ ansible_eth1.ipv4.address }}"
 openstack_network_node_ip: "{{ ansible_eth1.ipv4.address }}"
 
 openstack_network_external_device: "eth2"
-openstack_network_external_ip: "{{ ansible_eth2.ipv4.address }}"
+openstack_network_external_ip: "10.2.0.3"
 openstack_network_external_netmask: "16"
 openstack_network_external_network: "{{ openstack_network_external_ip }}/{{ openstack_network_external_netmask }}"
 openstack_network_external_allocation_pool_start: "10.2.0.100"
