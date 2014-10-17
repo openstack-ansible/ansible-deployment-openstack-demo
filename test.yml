@@ -169,11 +169,6 @@
       command: neutron --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name demo --os-username demo --os-password "{{ openstack_identity_demo_password }}" security-group-rule-create --direction=ingress --protocol=tcp --port-range-min=22 --port-range-max=22 demo-secgroup
       when: verify_secgroup|failed
 
-    - name: pause for 10 seconds to allow nova to pick up information about new security group
-      pause:
-        seconds: 10
-      when: verify_secgroup|failed
-
     - name: create a new virtual machine instance
       nova_compute:
         auth_url: "{{ openstack_identity_public_url }}"

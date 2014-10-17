@@ -54,8 +54,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     ansible.inventory_path = "inventories/demo.ini"
   end
 
-  #config.vm.provision "ansible" do |ansible|
-  #  ansible.playbook = "test.yml"
-  #end
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "test.yml"
+  end
 
 end
