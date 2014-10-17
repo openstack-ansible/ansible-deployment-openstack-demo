@@ -1,5 +1,7 @@
-export OS_USERNAME=admin
-export OS_TENANT_NAME=admin
-export OS_PASSWORD={{ identity_admin_password }}
-export OS_AUTH_URL={{ identity_public_url }}
-export OS_REGION_NAME={{ identity_region }}
+unset OS_USERNAME
+unset OS_TENANT_NAME
+unset OS_PASSWORD
+unset OS_AUTH_URL
+unset OS_REGION_NAME
+export OS_SERVICE_TOKEN={{ openstack_identity_admin_token }}
+export OS_SERVICE_ENDPOINT={{ openstack_identity_admin_url }}

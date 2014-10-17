@@ -1,9 +1,9 @@
 ---
 - hosts: all
-  sudo: True
+  sudo: False
   vars:
-    cirros_url: http://download.cirros-cloud.net/0.3.1/cirros-0.3.1-x86_64-disk.img
- 
+    cirros_url: http://cdn.download.cirros-cloud.net/0.3.2/cirros-0.3.2-x86_64-disk.img
+    openstack_identity_demo_password: password
   tasks:
 
     - name: update admin.openrc from template
@@ -12,49 +12,204 @@
         dest: "{{ ansible_env.PWD }}/admin.openrc"
         owner: "{{ ansible_ssh_user }}"
 
-    - name: ensure packages required for testing are installed
-      apt:
-        pkg: "{{ item }}"
-        state: latest
-        update_cache: yes
-        cache_valid_time: 600
-      with_items:
-        - python-keystoneclient
-        - python-glanceclient
-
     - name: create demo tenant
       keystone_user:
-        endpoint: "{{ identity_admin_url }}"
-        token: "{{ identity_admin_token }}"
+        endpoint: "{{ openstack_identity_admin_url }}"
+        token: "{{ openstack_identity_admin_token }}"
         tenant: demo
         tenant_description: "Demo Tenant"
 
     - name: create demo user
       keystone_user:
-        endpoint: "{{ identity_admin_url }}"
-        token: "{{ identity_admin_token }}"
+        endpoint: "{{ openstack_identity_admin_url }}"
+        token: "{{ openstack_identity_admin_token }}"
         tenant: demo
         user: demo
-        password: "{{ identity_demo_password }}"
+        password: "{{ openstack_identity_demo_password }}"
 
     - name: associate _member_ role with demo user
       keystone_user:
-        endpoint: "{{ identity_admin_url }}"
-        token: "{{ identity_admin_token }}"
+        endpoint: "{{ openstack_identity_admin_url }}"
+        token: "{{ openstack_identity_admin_token }}"
         tenant: demo
         user: demo
         role: _member_
 
+    - name: update demo.openrc template
+      template:
+        src: templates/demo.openrc
+        dest: "{{ ansible_env.PWD }}/demo.openrc"
+        mode: 0600
+
     - name: ensure cirros image is registered
       glance_image:
-        auth_url: "{{ identity_public_url }}"
+        auth_url: "{{ openstack_identity_public_url }}"
         login_tenant_name: demo
         login_username: demo
-        login_password: "{{ identity_demo_password }}"
-        name: cirros-0.3.1-x86_64
+        login_password: "{{ openstack_identity_demo_password }}"
+        name: cirros
         disk_format: qcow2
         copy_from: "{{ cirros_url }}"
         is_public: True
         timeout: 1200
         state: present
+      register: cirros_image
 
+    # Ansible neutron modules lists all tenants to get ids, but this is not
+    # permitted for non-admin users. Need to fix neutron_* modules as non-admin
+    # *should* be able to create networks, associate floating ips, etc.
+
+    - name: ensure demo user has admin role
+      keystone_user:
+        endpoint: "{{ openstack_identity_admin_url }}"
+        token: "{{ openstack_identity_admin_token }}"
+        tenant: demo
+        user: demo
+        role: admin
+
+    - name: update demo.openrc from template
+      template:
+        src: templates/demo.openrc
+        dest: "{{ ansible_env.PWD }}/demo.openrc"
+        owner: "{{ ansible_ssh_user }}"
+
+    - name: ensure internal network is registered
+      neutron_network:
+        auth_url: "{{ openstack_identity_public_url }}"
+        login_tenant_name: demo
+        login_username: demo
+        login_password: "{{ openstack_identity_demo_password }}"
+        tenant_name: demo
+        name: demo-net
+        state: present
+      register: openstack_network_internal
+
+    - name: ensure subnet internal network is registered
+      neutron_subnet:
+        auth_url: "{{ openstack_identity_public_url }}"
+        login_tenant_name: demo
+        login_username: demo
+        login_password: "{{ openstack_identity_demo_password }}"
+        tenant_name: demo
+        name: demo-subnet
+        network_name: demo-net
+        cidr: 192.168.13.0/24
+        enable_dhcp: true
+        gateway_ip: 192.168.13.1
+        dns_nameservers: 8.8.8.8
+        state: present
+
+    - name: ensure router exists
+      neutron_router:
+        auth_url: "{{ openstack_identity_public_url }}"
+        login_tenant_name: demo
+        login_username: demo
+        login_password: "{{ openstack_identity_demo_password }}"
+        tenant_name: demo
+        name: demo-router
+        state: present
+
+    - name: ensure router has interface connected to internal network
+      neutron_router_interface:
+        auth_url: "{{ openstack_identity_public_url }}"
+        login_tenant_name: demo
+        login_username: demo
+        login_password: "{{ openstack_identity_demo_password }}"
+        tenant_name: demo
+        router_name: demo-router
+        subnet_name: demo-subnet
+        state: present
+
+    - name: ensure router has external network gateway
+      neutron_router_gateway:
+        auth_url: "{{ openstack_identity_public_url }}"
+        login_tenant_name: demo
+        login_username: demo
+        login_password: "{{ openstack_identity_demo_password }}"
+        router_name: demo-router
+        network_name: public
+        state: present
+
+    - name: create ssh keypair
+      command: ssh-keygen -q -f {{ ansible_env.PWD }}/.ssh/id_rsa -P ""
+               creates={{ ansible_env.PWD }}/.ssh/id_rsa
+
+    - name: capture public key in variable
+      command: cat {{ ansible_env.PWD }}/.ssh/id_rsa.pub
+      register: pubkey
+      changed_when: false
+
+    - name: add ssh keypair to nova
+      nova_keypair:
+        auth_url: "{{ openstack_identity_public_url }}"
+        login_tenant_name: demo
+        login_username: demo
+        login_password: "{{ openstack_identity_demo_password }}"
+        name: demo-keypair
+        public_key: "{{ pubkey.stdout }}"
+        state: present
+
+    # the neutron_sec_group module needs work...
+    
+    - name: verity existence of demo security group
+      command: neutron --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name demo --os-username demo --os-password "{{ openstack_identity_demo_password }}" security-group-show demo-secgroup
+      register: verify_secgroup
+      ignore_errors: yes
+      changed_when: false
+    
+    - name: create demo-secgroup security group if necessary
+      command: neutron --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name demo --os-username demo --os-password "{{ openstack_identity_demo_password }}" security-group-create demo-secgroup
+      when: verify_secgroup|failed
+   
+    - name: ensure that demo-secgroup allows ping
+      command: neutron --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name demo --os-username demo --os-password "{{ openstack_identity_demo_password }}" security-group-rule-create --direction=ingress --protocol=icmp demo-secgroup
+      when: verify_secgroup|failed
+
+    - name: ensure that demo-secgroup allows ssh
+      command: neutron --os-auth-url "{{ openstack_identity_public_url }}" --os-tenant-name demo --os-username demo --os-password "{{ openstack_identity_demo_password }}" security-group-rule-create --direction=ingress --protocol=tcp --port-range-min=22 --port-range-max=22 demo-secgroup
+      when: verify_secgroup|failed
+
+    - name: pause for 10 seconds to allow nova to pick up information about new security group
+      pause:
+        seconds: 10
+      when: verify_secgroup|failed
+
+    - name: create a new virtual machine instance
+      nova_compute:
+        auth_url: "{{ openstack_identity_public_url }}"
+        login_tenant_name: demo
+        login_username: demo
+        login_password: "{{ openstack_identity_demo_password }}"
+        name: demo-instance
+        flavor_id: 1
+        image_id: "{{ cirros_image.id }}"
+        nics:
+          - net-id: "{{ openstack_network_internal.id }}"
+        key_name: demo-keypair
+        security_groups: demo-secgroup
+        wait: "yes"
+        state: present
+
+    - name: ensure floating ip is associated with vm instance
+      neutron_floating_ip:
+        auth_url: "{{ openstack_identity_public_url }}"
+        login_tenant_name: demo
+        login_username: demo
+        login_password: "{{ openstack_identity_demo_password }}"
+        instance_name: demo-instance
+        network_name: public
+        state: present
+      register: demo_floating_ip
+
+    - name: wait for ssh to become available
+      wait_for:
+        host: "{{ demo_floating_ip.public_ip }}"
+        port: 22
+
+    - name: ping demo virtual machine
+      command: ping -c 4 {{ demo_floating_ip.public_ip }}
+      changed_when: false
+
+    - name: verify that virtual machine can be logged into via ssh
+      command: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no cirros@{{ demo_floating_ip.public_ip }} hostname
+      changed_when: false

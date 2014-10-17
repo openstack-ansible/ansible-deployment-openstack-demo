@@ -1,0 +1,7 @@
+unset OS_SERVICE_TOKEN
+unset OS_SERVICE_ENDPOINT
+export OS_USERNAME=demo
+export OS_TENANT_NAME=demo
+export OS_PASSWORD={{ openstack_identity_demo_password }}
+export OS_AUTH_URL={{ openstack_identity_public_url }}
+export OS_REGION_NAME={{ openstack_default_region }}
