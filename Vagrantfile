@@ -6,16 +6,6 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 
-  config.vm.define "controller" do |machine|
-    machine.vm.box = "ubuntu/trusty64"
-    machine.vm.network :private_network, ip: "10.1.0.2",
-                       :netmask => "255.255.0.0"
-    machine.vm.hostname = "controller"
-    machine.vm.provider :virtualbox do |v| 
-      v.customize ["modifyvm", :id, "--memory", 2048]
-    end
-  end
-
   config.vm.define "network" do |machine|
     machine.vm.box = "ubuntu/trusty64"
     machine.vm.network :private_network, ip: "10.1.0.3",
@@ -39,23 +29,39 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-  config.vm.provision "ansible" do |ansible|
-    ansible.playbook = "getreqs.yml"
-    ansible.inventory_path = "inventories/demo.ini"
-  end
+  config.vm.define "controller" do |machine|
+    machine.vm.box = "ubuntu/trusty64"
+    machine.vm.network :private_network, ip: "10.1.0.2",
+                       :netmask => "255.255.0.0"
+    machine.vm.hostname = "controller"
+    machine.vm.provider :virtualbox do |v| 
+      v.customize ["modifyvm", :id, "--memory", 2048]
+    end
 
-  config.vm.provision "ansible" do |ansible|
-    ansible.playbook = "prep.yml"
-    ansible.inventory_path = "inventories/demo.ini"
-  end
+      #machine.vm.provision "ansible" do |ansible|
+      #  ansible.playbook = "getreqs.yml"
+      #  ansible.inventory_path = "inventories/demo.ini"
+      #  ansible.limit = 'all'
+      #end
 
-  config.vm.provision "ansible" do |ansible|
-    ansible.playbook = "deploy.yml"
-    ansible.inventory_path = "inventories/demo.ini"
-  end
+      #machine.vm.provision "ansible" do |ansible|
+      #  ansible.playbook = "prep.yml"
+      #  ansible.inventory_path = "inventories/demo.ini"
+      #  ansible.limit = 'all'
+      #end
 
-  config.vm.provision "ansible" do |ansible|
-    ansible.playbook = "test.yml"
+      #machine.vm.provision "ansible" do |ansible|
+      #  ansible.playbook = "deploy.yml"
+      #  ansible.inventory_path = "inventories/demo.ini"
+      #  ansible.limit = 'all'
+      #end
+
+      machine.vm.provision "ansible" do |ansible|
+        ansible.playbook = "test.yml"
+        ansible.inventory_path = "inventories/demo.ini"
+        ansible.limit = 'all'
+      end
+
   end
 
 end

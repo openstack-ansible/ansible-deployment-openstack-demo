@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: controller
   sudo: False
   vars:
     cirros_url: http://cdn.download.cirros-cloud.net/0.3.2/cirros-0.3.2-x86_64-disk.img
