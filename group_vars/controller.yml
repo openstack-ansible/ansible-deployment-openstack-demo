@@ -1,2 +1,2 @@
 ---
-mariadb_bind_address: "0.0.0.0",
+mariadb_bind_address: "0.0.0.0"

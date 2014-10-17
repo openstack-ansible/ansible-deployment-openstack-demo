@@ -1,5 +1,5 @@
 ---
-openstack_identity_endpoint_host: "10.1.0.2",
-openstack_image_endpoint_host: "10.1.0.2",
-openstack_compute_endpoint_host: "10.1.0.2",
-openstack_network_endpoint_host: "10.1.0.2",
+openstack_identity_endpoint_host: "10.1.0.2"
+openstack_image_endpoint_host: "10.1.0.2"
+openstack_compute_endpoint_host: "10.1.0.2"
+openstack_network_endpoint_host: "10.1.0.2"

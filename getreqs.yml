@@ -20,6 +20,9 @@
         - keystone
         - glance
         - nova-controller
+        - nova-compute
+        - neutron-controller
+        - neutron-network
 
     - name: check out library needed for demo deployment from github.com
       git:
