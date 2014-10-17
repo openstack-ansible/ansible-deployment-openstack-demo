@@ -39,32 +39,29 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       v.customize ["modifyvm", :id, "--nicpromisc3", "allow-vms"]
     end
 
-    machine.vm.provision "ansible" do |ansible|
-      ansible.playbook = "getreqs.yml"
-      ansible.inventory_path = "development.ini"
-      ansible.limit = 'all'
-    end
+    #machine.vm.provision "ansible" do |ansible|
+    #  ansible.playbook = "getreqs.yml"
+    #  ansible.inventory_path = "development.ini"
+    #  ansible.limit = 'all'
+    #end
 
-    machine.vm.provision "ansible" do |ansible|
-      ansible.playbook = "prep.yml"
-      ansible.inventory_path = "development.ini"
-      ansible.limit = 'all'
-    end
+    #machine.vm.provision "ansible" do |ansible|
+    #  ansible.playbook = "prep.yml"
+    #  ansible.inventory_path = "development.ini"
+    #  ansible.limit = 'all'
+    #end
 
-    machine.vm.provision "ansible" do |ansible|
-      ansible.playbook = "deploy.yml"
-      ansible.inventory_path = "development.ini"
-      ansible.groups = {
-        "network" => ["controller"],
-      }
-      ansible.limit = 'all'
-    end
+    #machine.vm.provision "ansible" do |ansible|
+    #  ansible.playbook = "deploy.yml"
+    #  ansible.inventory_path = "development.ini"
+    #  ansible.limit = 'all'
+    #end
 
-    machine.vm.provision "ansible" do |ansible|
-      ansible.playbook = "test.yml"
-      ansible.inventory_path = "development.ini"
-      ansible.limit = 'all'
-    end
+    #machine.vm.provision "ansible" do |ansible|
+    #  ansible.playbook = "test.yml"
+    #  ansible.inventory_path = "development.ini"
+    #  ansible.limit = 'all'
+    #end
 
   end
 

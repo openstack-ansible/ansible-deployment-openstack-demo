@@ -19,3 +19,12 @@
       with_items:
         - python-mysqldb
         - python-keystoneclient
+
+- hosts: all:!network
+  sudo: True
+  tasks:
+
+    # FIXME: obv
+    - name: add route to 10.2.0.0/16 network...
+      command: route add -net 10.0.0.0/16 gw 10.1.0.3
+ 
