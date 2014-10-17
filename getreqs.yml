@@ -3,7 +3,7 @@
   gather_facts: False
   sudo: False
   tasks:
-
+    
     - name: check out required roles
       delegate_to: localhost
       connection: local
