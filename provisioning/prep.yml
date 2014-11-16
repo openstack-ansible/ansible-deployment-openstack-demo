@@ -4,7 +4,6 @@
   roles:
     - upgrade
     - chrony
-    - docker
 
 - hosts: controller
   sudo: True
