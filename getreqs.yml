@@ -23,6 +23,7 @@
         - nova-compute
         - neutron-controller
         - neutron-network
+        - horizon
 
     - name: check out library needed for demo deployment from github.com
       git:

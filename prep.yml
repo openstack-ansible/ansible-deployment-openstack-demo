@@ -27,4 +27,4 @@
     # FIXME: obv
     - name: add route to 10.2.0.0/16 network...
       command: route add -net 10.2.0.0/16 gw 10.1.0.3
- 
+      ignore_errors: yes 
