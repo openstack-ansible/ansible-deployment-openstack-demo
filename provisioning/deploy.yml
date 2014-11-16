@@ -8,6 +8,7 @@
     - glance
     - nova-controller
     - neutron-controller
+    - horizon
 
 - hosts: network
   sudo: True
