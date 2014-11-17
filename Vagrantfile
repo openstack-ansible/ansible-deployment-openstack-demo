@@ -28,14 +28,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-  config.vm.define "controller" do |machine|
+  config.vm.define "controller", primary: true do |machine|
     machine.vm.box = "ubuntu/trusty64"
     machine.vm.hostname = "controller"
     machine.vm.network "forwarded_port", guest: 80, host: 8080
     machine.vm.network :private_network, ip: "10.1.0.2",
                        :netmask => "255.255.0.0"
     machine.vm.provider :virtualbox do |v| 
-      v.customize ["modifyvm", :id, "--memory", 1280]
+      v.customize ["modifyvm", :id, "--memory", 2048]
     end
 
     machine.vm.provision "ansible" do |ansible|
