@@ -23,7 +23,16 @@
   sudo: True
   tasks:
 
-    # FIXME: obv
-    - name: add route to 10.2.0.0/16 network...
-      command: route add -net 10.2.0.0/16 gw 10.1.0.3
-      ignore_errors: yes 
+    - name: update static route configuration script
+      copy:
+        dest: /etc/network/if-up.d/openstack-demo-static-route
+        owner: root
+        group: root
+        mode: 0755
+        content: "#!/bin/sh\nroute add -net 10.2.0.0/16 gw 10.1.0.3\n"
+      register: static_route_script
+
+    - name: ensure that static route script is run at least once
+      command: /etc/network/if-up.d/openstack-demo-static-route
+      when: static_route_script|changed 
+      failed_when: false
