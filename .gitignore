@@ -1,4 +1,4 @@
 .vagrant
 private
 library/*
-roles
+roles/*
